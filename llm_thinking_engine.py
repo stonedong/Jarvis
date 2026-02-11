@@ -56,7 +56,7 @@ class LLMThinkingEngine:
         """
         # 构建适用于LLM的消息
         messages = self._build_messages(context)
-        
+        print(messages)
         # 调用LLM进行思考
         thinking_content, response_content = self._call_llm(messages)
         
@@ -66,7 +66,7 @@ class LLMThinkingEngine:
             thinking_content, 
             context
         )
-        
+        print(thought)
         return thought
     
     def _build_messages(self, context: InteractionContext) -> list[Dict[str, str]]:

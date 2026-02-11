@@ -1,4 +1,5 @@
 from coordinator import Coordinator, SimpleToolExecutor
+from default_tool_executor import DefaultToolExecutor
 from llm_thinking_engine import LLMThinkingEngine
 from conversation_manager import ConversationManager
 import os
@@ -19,7 +20,13 @@ def main():
     thinking_engine = LLMThinkingEngine()
 
     # 创建工具执行器实例
-    tool_executor = SimpleToolExecutor()
+    # tool_executor = SimpleToolExecutor()
+    tool_executor = DefaultToolExecutor(tools_package_path="tools")
+
+    # 列出所有工具
+    print("可用工具:")
+    for tool_name, info in tool_executor.list_tools().items():
+        print(f"  - {tool_name}: {info}")
     
     # 创建会话管理器
     conversation_manager = ConversationManager(max_history_length=20)
