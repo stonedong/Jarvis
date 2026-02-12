@@ -1,8 +1,9 @@
-from coordinator import Coordinator, SimpleToolExecutor
+from coordinator import Coordinator
 from default_tool_executor import DefaultToolExecutor
 from llm_thinking_engine import LLMThinkingEngine
 from conversation_manager import ConversationManager
 import os
+from utils import logger
 
 
 def save_conversation(manager: ConversationManager, save_dir: str = "."):
@@ -16,7 +17,7 @@ def save_conversation(manager: ConversationManager, save_dir: str = "."):
 
 def start_scheduler():
     """启动调度器"""
-    from scheduler.scheduler import scheduler
+    from scheduler import scheduler
     scheduler.start()
 
 def main():
@@ -27,17 +28,11 @@ def main():
     thinking_engine = LLMThinkingEngine()
 
     # 创建工具执行器实例
-    # tool_executor = SimpleToolExecutor()
     tool_executor = DefaultToolExecutor(tools_package_path="tools")
 
     # 列出所有工具
-    print("可用工具:")
-    for tool_name, info in tool_executor.list_tools().items():
-        print(f"  - {tool_name}: {info}")
-    
-    # 获取所有工具信息用于LLM提示
     all_tools_info = tool_executor.get_all_tools_info()
-    print(f"所有工具信息: {all_tools_info}")
+    logger.info(f"所有工具信息: {all_tools_info}")
     
     # 创建会话管理器
     conversation_manager = ConversationManager(max_history_length=20)

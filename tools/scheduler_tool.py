@@ -10,7 +10,7 @@ class SchedulerTool:
 
     使用示例:
       - 添加任务:
-          execute(action='add', func_path='my_module:my_func', trigger='interval', trigger_args={'seconds':30}, job_id='job1')
+          execute(action='add', func='tool_name', trigger='interval', trigger_args={'seconds':30}, job_id='job1')
       - 列出任务:
           execute(action='list')
       - 删除任务:
@@ -23,7 +23,7 @@ class SchedulerTool:
         job_id: Optional[str] = None,
         trigger: str = "date",
         trigger_args: Optional[Dict[str, Any]] = None,
-        func_path: Optional[str] = None,
+        func: Optional[str] = None,
         args: Optional[List[Any]] = None,
         kwargs: Optional[Dict[str, Any]] = None,
     ) -> Any:
@@ -34,7 +34,7 @@ class SchedulerTool:
             job_id: 任务 id（删除或指定 id 时使用；添加时可选）
             trigger: APScheduler trigger 类型: 'date'|'interval'|'cron'
             trigger_args: 传递给 trigger 的参数（例如 {'seconds':10} 或 {'hour':'12'})
-            func_path: 要调度的可调用路径，格式 'module:callable' 或 'module.callable'
+            func: 要调度的工具，从可用工具中指定，直接给出工具的名字
             args: 位置参数列表
             kwargs: 关键字参数字典
 
@@ -48,21 +48,27 @@ class SchedulerTool:
 
         try:
             if action == "add":
-                if not func_path:
-                    raise ValueError("添加任务需要参数 'func_path'，格式 'module:callable' 或 'module.callable'")
+                if not func:
+                    raise ValueError("添加任务需要参数 'func'")
 
-                if ":" in func_path:
-                    module_name, func_name = func_path.split(":", 1)
-                elif "." in func_path:
-                    module_name, func_name = func_path.rsplit(".", 1)
-                else:
-                    raise ValueError("无法解析 func_path: 请使用 'module:callable' 或 'module.callable' 格式")
-                module_name = "tools." + module_name
+
+                module_name = "tools." + func
                 module = importlib.import_module(module_name)
-                func = getattr(module, func_name)
+                # func = getattr(module, "execute")
+                if hasattr(module, "execute"):
+                    execute_func = getattr(module, "execute")
+                else:
+                    # assume class named after func (capitalized) with execute method
+                    class_name = func.capitalize()
+                    if hasattr(module, class_name):
+                        cls = getattr(module, class_name)
+                        instance = cls()
+                        execute_func = instance.execute
+                    else:
+                        raise AttributeError(f"Module {module_name} has no execute function or class {class_name}")
 
                 job = scheduler.add_job(
-                    func,
+                    execute_func,
                     trigger,
                     args=args,
                     kwargs=kwargs,

@@ -1,8 +1,12 @@
+from utils.logger import logger
+
+
 class Calculator:
     """计算器工具"""
     def execute(self, a: int, b: int, operation: str) -> float:
         """执行计算操作"""
         if operation == "add":
+            logger.info(f"执行加法: {a} + {b}")
             return a + b
         elif operation == "subtract":
             return a - b
