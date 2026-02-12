@@ -14,8 +14,15 @@ def save_conversation(manager: ConversationManager, save_dir: str = "."):
     manager.save_to_file(filepath)
     return filepath
 
+def start_scheduler():
+    """启动调度器"""
+    from scheduler.scheduler import scheduler
+    scheduler.start()
 
 def main():
+    # 启动调度器（如果需要定时任务功能）
+    start_scheduler()
+
     # 创建思考引擎实例
     thinking_engine = LLMThinkingEngine()
 

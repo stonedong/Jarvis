@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # 环境
     ENV: str = Field("dev")
     DEBUG: bool = Field(True)
+    TIMEZONE: str = Field("Asia/Shanghai")
 
     # 日志
     LOG_LEVEL: str = Field("LOG_LEVEL")
@@ -17,6 +18,9 @@ class Settings(BaseSettings):
 
     # LLM配置
     LLM_API_KEY: str = Field("LLM_API_KEY")
+
+    # 调度器配置
+    SCHEDULER_SQLITE_FILE: str = Field("./local/scheduler.db")
 
     class Config:
         env_file = ".env"
