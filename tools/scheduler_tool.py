@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Optional
 import importlib
-from loguru import logger
+from utils import logger
 
-from scheduler.scheduler import scheduler
+from scheduler import scheduler
 
 
 class SchedulerTool:
@@ -108,6 +108,7 @@ class SchedulerTool:
             else:
                 raise ValueError(f"未知 action: {action}")
 
+            logger.info(f"SchedulerTool 执行操作完成: {action}，参数: job_id={job_id}, trigger={trigger}, trigger_args={trigger_args}, func={func}, args={args}, kwargs={kwargs}")
         except Exception as e:
             logger.exception("SchedulerTool 执行失败")
             return {"error": str(e)}

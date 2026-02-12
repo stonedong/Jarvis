@@ -6,7 +6,7 @@ from utils import logger
 
 
 class Moss:
-    """莫斯"""
+    """MOSS，莫斯，一个基于LLM的智能体，能够执行复杂任务"""
     def execute(self, task: str) -> str:
         """
         执行莫斯任务
