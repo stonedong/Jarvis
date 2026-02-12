@@ -6,10 +6,9 @@ import json
 import os
 from config.settings import settings
 from openai import OpenAI
-
-# 假设这些是从主流程定义中导入的
 from coordinator import InteractionContext, ActionType
 from coordinator import Thought, ToolCall
+from utils import logger
 
 
 @dataclass
@@ -56,7 +55,7 @@ class LLMThinkingEngine:
         """
         # 构建适用于LLM的消息
         messages = self._build_messages(context)
-        print(messages)
+        logger.info(f"LLM构建的消息: {messages}")
         # 调用LLM进行思考
         thinking_content, response_content = self._call_llm(messages)
         
@@ -66,7 +65,7 @@ class LLMThinkingEngine:
             thinking_content, 
             context
         )
-        print(thought)
+        logger.info(f"LLM思考结果: {thought}")
         return thought
     
     def _build_messages(self, context: InteractionContext) -> list[Dict[str, str]]:
@@ -151,19 +150,8 @@ class LLMThinkingEngine:
             "prompts", 
             "system_prompt.txt"
         )
-        try:
-            with open(prompt_path, "r", encoding="utf-8") as f:
-                return f.read()
-        except FileNotFoundError:
-            # 如果文件不存在，返回默认提示词
-            return """你是一个智能助理的决策引擎。你需要分析用户的请求，并决定下一步的行动。
-
-你有三种可能的行动：
-1. DIRECT_REPLY：直接回复用户
-2. CALL_TOOL：调用工具来完成任务
-3. ASK_USER：询问用户以获取更多信息
-
-请以JSON格式输出你的决策。"""
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            return f.read()
     
     def _call_llm(self, messages: list[Dict[str, str]]) -> tuple[str, str]:
         """

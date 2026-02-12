@@ -21,6 +21,8 @@ def start_scheduler():
     scheduler.start()
 
 def main():
+    logger.info("启动智能助理...")
+    
     # 启动调度器（如果需要定时任务功能）
     start_scheduler()
 
