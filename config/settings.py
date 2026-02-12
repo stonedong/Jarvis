@@ -22,6 +22,14 @@ class Settings(BaseSettings):
     # 调度器配置
     SCHEDULER_SQLITE_FILE: str = Field("./local/scheduler.db")
 
+    # 邮件发送配置
+    SMTP_HOST: str = Field("SMTP_HOST")
+    SMTP_PORT: int = Field(587, env="SMTP_PORT")
+    SMTP_USER: str = Field("SMTP_USER")
+    SMTP_PASSWORD: str = Field("SMTP_PASSWORD")
+    SMTP_USE_TLS: bool = Field(True, env="SMTP_USE_TLS")
+    SMTP_FROM: str = Field("SMTP_FROM")
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
