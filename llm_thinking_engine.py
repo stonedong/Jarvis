@@ -25,13 +25,14 @@ class LLMConfig:
 class LLMThinkingEngine:
     """LLM驱动的思考引擎实现"""
     
-    def __init__(self, config: Optional[LLMConfig] = None):
+    def __init__(self, system_prompt_file: str = "system_prompt.txt", config: Optional[LLMConfig] = None):
         """
         初始化LLMThinkingEngine
         
         Args:
             config: LLM配置对象，如果为None则使用默认配置
         """
+        self.system_prompt_file = system_prompt_file
         self.config = config or LLMConfig()
         self._init_client()
     
@@ -148,7 +149,7 @@ class LLMThinkingEngine:
         prompt_path = os.path.join(
             os.path.dirname(__file__), 
             "prompts", 
-            "system_prompt.txt"
+            self.system_prompt_file
         )
         with open(prompt_path, "r", encoding="utf-8") as f:
             return f.read()

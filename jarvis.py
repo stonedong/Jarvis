@@ -4,6 +4,7 @@ from llm_thinking_engine import LLMThinkingEngine
 from conversation_manager import ConversationManager
 import os
 from utils import logger
+from scheduler import scheduler
 
 
 def save_conversation(manager: ConversationManager, save_dir: str = "."):
@@ -17,12 +18,11 @@ def save_conversation(manager: ConversationManager, save_dir: str = "."):
 
 def start_scheduler():
     """启动调度器"""
-    from scheduler import scheduler
     scheduler.start()
 
 def main():
     logger.info("启动智能助理...")
-    
+
     # 启动调度器（如果需要定时任务功能）
     start_scheduler()
 
@@ -57,6 +57,8 @@ def main():
     print("  - 'showhistory'：显示对话历史摘要")
     print("  - 'stats'：显示对话统计信息")
     print("  - '退出'：直接退出（不保存）")
+    print("  - 'list': 列出所有定时任务")
+    print("  - 'delete <job_id>': 删除指定定时任务")
     print("=" * 60)
     
     while True:
@@ -111,6 +113,28 @@ def main():
                     print(f"✓ 对话历史已从 {filepath} 加载")
                 else:
                     print(f"✗ 文件不存在: {filepath}")
+                continue
+
+            elif user_input == "list":
+                # 列出所有定时任务
+                jobs = scheduler.get_jobs()
+                if not jobs:
+                    print("没有定时任务。")
+                else:
+                    print("\n--- 定时任务列表 ---")
+                    for job in jobs:
+                        print(f"ID: {job.id}, 下一次运行时间: {job.next_run_time}, 触发器: {job.trigger}")
+                    print("--- 结束 ---\n")
+                continue
+
+            elif user_input.startswith("delete "):
+                # 删除指定定时任务
+                job_id = user_input.split(" ", 1)[1].strip()
+                try:
+                    scheduler.remove_job(job_id)
+                    print(f"✓ 定时任务 {job_id} 已删除")
+                except Exception as e:
+                    print(f"✗ 无法删除定时任务 {job_id}: {str(e)}")
                 continue
             
             # 处理用户输入，使用连续对话模式
