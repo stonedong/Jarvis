@@ -1,37 +1,9 @@
 import inspect
 import importlib
-import sys
 from pathlib import Path
-from typing import Dict, Optional, Type, Any
-from dataclasses import dataclass
-from abc import ABC, abstractmethod
-from collections import defaultdict
+from typing import Dict, Any
 
-
-@dataclass
-class ToolCall:
-    """工具调用请求"""
-    tool_name: str
-    parameters: Dict[str, Any]
-    reason: str
-
-
-@dataclass
-class ToolResult:
-    """工具执行结果"""
-    tool_name: str
-    success: bool
-    result: Any
-    error: Optional[str] = None
-
-
-class ToolExecutor(ABC):
-    """工具执行器抽象基类"""
-    
-    @abstractmethod
-    def execute(self, tool_call: ToolCall) -> ToolResult:
-        """执行工具调用"""
-        pass
+from coordinator import ToolExecutor, ToolCall, ToolResult
 
 
 class DefaultToolExecutor(ToolExecutor):
@@ -182,4 +154,23 @@ class DefaultToolExecutor(ToolExecutor):
                     "parameters": list(sig.parameters.keys()),
                     "docstring": tool.execute.__doc__ or ""
                 }
+        return tools_info
+    
+    # 方法用于返回所有工具信息，用于LLM生成工具调用提示
+    def get_all_tools_info(self) -> Dict[str, Any]:
+        """
+        获取所有工具的信息
+        
+        Returns:
+            包含工具名称、参数和文档字符串的字典
+        """
+        tools_info = []
+        for tool_name, tool in self.tools.items():
+            if hasattr(tool, "execute"):
+                sig = inspect.signature(tool.execute)
+                tools_info.append({
+                    "tool_name": tool_name,
+                    "parameters": list(sig.parameters.keys()),
+                    "description": tool.execute.__doc__ or ""
+                })
         return tools_info

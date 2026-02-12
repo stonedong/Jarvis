@@ -83,6 +83,8 @@ class LLMThinkingEngine:
         
         # 系统提示
         system_prompt = self._get_system_prompt()
+        if context.all_tool_info:
+            system_prompt += f"\n可用工具信息如下：\n{context.all_tool_info}\n"
         messages.append({"role": "system", "content": system_prompt})
         
         # 添加对话历史

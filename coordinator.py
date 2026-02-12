@@ -53,6 +53,10 @@ class ToolExecutor(ABC):
         """执行工具调用"""
         pass
 
+    @abstractmethod
+    def get_all_tools_info(self) -> Dict[str, Any]:
+        """获取所有工具的信息"""
+        pass
 
 class ThinkingEngine(ABC):
     """思考引擎抽象基类"""
@@ -72,6 +76,7 @@ class InteractionContext:
     thought_chain: List[Thought]
     max_iterations: int = 5
     conversation_manager: Optional['ConversationManager'] = None
+    all_tool_info: Dict[str, Any] = None
     
     @property
     def current_iteration(self) -> int:
@@ -140,7 +145,8 @@ class Coordinator:
             tool_results=[],
             thought_chain=[],
             max_iterations=self.max_iterations,
-            conversation_manager=self.conversation_manager if use_conversation_manager else None
+            conversation_manager=self.conversation_manager if use_conversation_manager else None,
+            all_tool_info=self.tool_executor.get_all_tools_info() if hasattr(self.tool_executor, "get_all_tools_info") else None
         )
         
         # 主循环

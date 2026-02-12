@@ -28,6 +28,10 @@ def main():
     for tool_name, info in tool_executor.list_tools().items():
         print(f"  - {tool_name}: {info}")
     
+    # 获取所有工具信息用于LLM提示
+    all_tools_info = tool_executor.get_all_tools_info()
+    print(f"所有工具信息: {all_tools_info}")
+    
     # 创建会话管理器
     conversation_manager = ConversationManager(max_history_length=20)
     
