@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = Field("SMTP_PASSWORD")
     SMTP_USE_TLS: bool = Field(True, env="SMTP_USE_TLS")
     SMTP_FROM: str = Field("SMTP_FROM")
+    IMAP_HOST: str = Field("IMAP_HOST")
+    IMAP_PORT: int = Field(993, env="IMAP_PORT")
 
     class Config:
         env_file = ".env"
